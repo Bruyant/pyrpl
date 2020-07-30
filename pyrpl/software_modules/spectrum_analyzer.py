@@ -27,7 +27,7 @@ from ..widgets.module_widgets import SpecAnWidget
 
 import sys
 import scipy.signal as sig
-import scipy.fftpack
+import scipy
 
 # Some initial remarks about spectrum estimation:
 # Main source: Oppenheim + Schaefer, Digital Signal Processing, 1975
@@ -363,7 +363,7 @@ class SpectrumAnalyzer(AcquisitionModule):
             return np.fft.rfftfreq(self.data_length*self.PADDING_FACTOR,
                                    self.sampling_time)
         else:
-            return self.center + scipy.fftpack.fftshift( scipy.fftpack.fftfreq(
+            return self.center + scipy.fft.fftshift( scipy.fft.fftfreq(
                                   self.data_length*self.PADDING_FACTOR,
                                   self.sampling_time)) #[self.useful_index()]
 
@@ -495,9 +495,9 @@ class SpectrumAnalyzer(AcquisitionModule):
             # --> In fact, we will use numpy.rfft insead of
             # scipy.fftpack.rfft because the output
             # format is directly a complex array, and thus, easier to handle.
-            fft1 = np.fft.fftpack.rfft(np.real(iq_data),
+            fft1 = np.fft.rfft(np.real(iq_data),
                                        self.data_length*self.PADDING_FACTOR)
-            fft2 = np.fft.fftpack.rfft(np.imag(iq_data),
+            fft2 = np.fft.rfft(np.imag(iq_data),
                                        self.data_length*self.PADDING_FACTOR)
             cross_spectrum = np.conjugate(fft1)*fft2
 
@@ -510,7 +510,7 @@ class SpectrumAnalyzer(AcquisitionModule):
             return res/abs(self.transfer_function(self.frequencies))**2
         else:
             # Realize the complex fft of iq data
-            res = scipy.fftpack.fftshift(scipy.fftpack.fft(iq_data,
+            res = scipy.fft.fftshift(scipy.fft.fft(iq_data,
                                         self.data_length*self.PADDING_FACTOR))
             # at some point we need to cache the tf for performance
             self._last_curve_raw = np.abs(res)**2 # for debugging purpose
